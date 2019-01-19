@@ -1,0 +1,15 @@
+name: idix_back
+core: 8.x
+type: module
+package: 'Test Technique Idix Back'
+description: 'Module Idix Back'
+dependencies:
+  - contact
+  - datetime
+  - field
+  - language
+  - menu_ui
+  - node
+  - path
+  - user
+version: 8.x-1.0

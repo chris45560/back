@@ -1,0 +1,23 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_idix_back_film_date
+    - node.type.idix_back_film
+  module:
+    - datetime
+id: node.idix_back_film.field_idix_back_film_date
+field_name: field_idix_back_film_date
+entity_type: node
+bundle: idix_back_film
+label: date
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+default_value_callback: ''
+settings: {  }
+field_type: datetime

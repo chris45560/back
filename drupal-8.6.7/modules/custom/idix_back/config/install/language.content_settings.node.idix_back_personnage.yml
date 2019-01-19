@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - node.type.idix_back_personnage
+id: node.idix_back_personnage
+target_entity_type_id: node
+target_bundle: idix_back_personnage
+default_langcode: site_default
+language_alterable: false

@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_idix_back_personnage_name
+    - node.type.idix_back_personnage
+id: node.idix_back_personnage.field_idix_back_personnage_name
+field_name: field_idix_back_personnage_name
+entity_type: node
+bundle: idix_back_personnage
+label: Name
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string
