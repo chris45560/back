@@ -1,0 +1,7 @@
+idix_back.form:
+  path: '/idix-back-form'
+  defaults:
+    _title: 'Formulaire - Ajout Personnage'
+    _form: '\Drupal\idix_back\Form\IdixbackForm'
+  requirements:
+    _permission: 'access content'

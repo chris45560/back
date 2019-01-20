@@ -3,7 +3,6 @@ status: true
 dependencies:
   config:
     - field.field.node.idix_back_personnage.field_idix_back_personnage_films
-    - field.field.node.idix_back_personnage.field_idix_back_personnage_id
     - field.field.node.idix_back_personnage.field_idix_back_personnage_name
     - node.type.idix_back_personnage
   module:
@@ -24,13 +23,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
-    region: content
-  field_idix_back_personnage_id:
-    weight: 122
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
     region: content
   field_idix_back_personnage_name:
     weight: 123

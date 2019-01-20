@@ -4,7 +4,6 @@ dependencies:
   config:
     - field.field.node.idix_back_film.field_idix_back_film_abstract
     - field.field.node.idix_back_film.field_idix_back_film_date
-    - field.field.node.idix_back_film.field_idix_back_film_id
     - field.field.node.idix_back_film.field_idix_back_film_personnages
     - field.field.node.idix_back_film.field_idix_back_film_title
     - node.type.idix_back_film
@@ -35,13 +34,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
-    region: content
-  field_idix_back_film_id:
-    weight: 122
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
     region: content
   field_idix_back_film_personnages:
     weight: 127

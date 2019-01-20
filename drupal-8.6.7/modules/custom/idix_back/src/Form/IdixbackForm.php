@@ -1,0 +1,169 @@
+<?php
+
+namespace Drupal\idix_back\Form;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements a form.
+ */
+class IdixbackForm extends FormBase
+{
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFormId()
+    {
+        return 'idix_back_form';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(array $form, FormStateInterface $form_state)
+    {
+        /*
+        $form['id'] = array(
+            '#type' => 'number',
+            '#title' => t('Id'),
+            '#required' => TRUE,
+        );
+        */
+
+        $form['name'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Name'),
+            '#required' => TRUE,
+        );
+
+        //$fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'idix_back_film');
+
+        $nids = db_select('node', 'n')
+            ->fields('n', array('nid'))
+            ->condition('type', 'idix_back_film', '=')
+            ->execute()
+            ->fetchCol();
+
+        // Get all of the article nodes.
+        $nodes = node_load_multiple($nids);
+
+        $titles = [];
+        foreach ($nodes as $key => $value) {
+            $titles[$key] = $value->title->value;
+        }
+
+        $form['films'] = [
+            '#type' => 'checkboxes',
+            '#title' => 'Films',
+            '#description' => '',
+            '#options' => $titles,
+        ];
+
+        $form['actions']['#type'] = 'actions';
+        $form['actions']['submit'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Save'),
+            '#button_type' => 'primary',
+        ];
+
+        return $form;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validateForm(array &$form, FormStateInterface $form_state)
+    {
+        if ($form_state->getValue('name') == '') {
+            $form_state->setErrorByName('name', $this->t('Le nom est requis !'));
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function submitForm(array &$form, FormStateInterface $form_state)
+    {
+        drupal_set_message($this->t('@number a été ajouté avec succés !', ['@number' => $form_state->getValue('name')]));
+        //$values = $form_state->getValues();
+        //var_dump($form_state->getValue('id'));
+        //die();
+
+        $my_article = Node::create(['type' => 'idix_back_personnage']);
+        //var_dump($my_article);
+        $my_article->set('title', $form_state->getValue('name'));
+        //$my_article->set('field_idix_back_personnage_id', $form_state->getValue('id'));
+        $my_article->set('field_idix_back_personnage_name', $form_state->getValue('name'));
+
+        $my_article->enforceIsNew();
+        $my_article->save();
+
+        $nids = db_select('node', 'n')
+            ->fields('n', array('nid'))
+            ->condition('type', 'idix_back_personnage', '=')
+            ->execute()
+            ->fetchCol();
+
+        //var_dump($nids);
+        var_dump(end($nids));
+        // Get all of the article nodes.
+        //$nodes = node_load_multiple($nids);
+
+        //$nid = $my_article->id();
+        //var_dump($nid);
+        die();
+        //echo "TTTTEESEESSTT";
+        //var_dump($my_article);
+        //die();
+        //$my_article->enforceIsNew();
+        //$my_article->save();
+        //var_dump($my_article);
+        //die();
+        //$nid = $my_article->id();
+
+        //var_dump($nid);
+        //die();
+        //$node = \Drupal::entityTypeManager()->getStorage('node')->create([
+        //    'type'       => 'idix_back_personnage'
+        //]);
+        //$node->save();
+
+        //$nid = $node->id();
+        //var_dump($nid);
+        //die();
+        //$my_article->set('title', $form_state->getValue('name'));
+        //$my_article->set('field_idix_back_personnage_id', $form_state->getValue('id'));
+        //$my_article->set('field_idix_back_personnage_name', $form_state->getValue('name'));
+        //$my_article->set('field_idix_back_personnage_films', $form_state->getValue('films'));
+
+        //var_dump($form);
+
+        //$form_state->getformObject()->getEntity()->id();
+        //die();
+        /*
+        foreach ($form_state->getValue('films') as $key => $value) {
+            $node = \Drupal\node\Entity\Node::load($value);
+            $array = $node->toArray();
+
+            if (!empty($array['field_idix_back_film_personnages'])) {
+                $actualscharacters = $array['field_idix_back_film_personnages'];
+                foreach ($actualscharacters as $keys => $values) {
+                    $characters[] = $value['target_id'];
+                }
+                array_push($characters, $form_state->getValue('id'));
+                $node->set("field_idix_back_film_personnages", $characters);
+                $node->save();
+            }
+            else {
+                $node->set("field_idix_back_film_personnages", $form_state->getValue('id'));
+                $node->save();
+            }
+        }
+        */
+        //$my_article->enforceIsNew();
+        //$my_article->save();
+    }
+}

@@ -3,7 +3,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
-    - field.field.node.idix_back_personnage.field_idix_back_personnage_id
     - node.type.idix_back_personnage
   module:
     - user
@@ -18,5 +17,4 @@ content:
     third_party_settings: {  }
     region: content
 hidden:
-  field_idix_back_personnage_id: true
   langcode: true
