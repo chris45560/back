@@ -6,6 +6,9 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 
+use \Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
 /**
  * Implements a form.
  */
@@ -25,21 +28,11 @@ class IdixbackForm extends FormBase
      */
     public function buildForm(array $form, FormStateInterface $form_state)
     {
-        /*
-        $form['id'] = array(
-            '#type' => 'number',
-            '#title' => t('Id'),
-            '#required' => TRUE,
-        );
-        */
-
         $form['name'] = array(
             '#type' => 'textfield',
             '#title' => t('Name'),
             '#required' => TRUE,
         );
-
-        //$fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', 'idix_back_film');
 
         $nids = db_select('node', 'n')
             ->fields('n', array('nid'))
@@ -88,15 +81,19 @@ class IdixbackForm extends FormBase
     public function submitForm(array &$form, FormStateInterface $form_state)
     {
         drupal_set_message($this->t('@number a été ajouté avec succés !', ['@number' => $form_state->getValue('name')]));
-        //$values = $form_state->getValues();
-        //var_dump($form_state->getValue('id'));
-        //die();
 
         $my_article = Node::create(['type' => 'idix_back_personnage']);
-        //var_dump($my_article);
         $my_article->set('title', $form_state->getValue('name'));
-        //$my_article->set('field_idix_back_personnage_id', $form_state->getValue('id'));
+
+        $films = [];
+        foreach ($form_state->getValue('films') as $key => $value) {
+            if (!empty($value)) {
+                $films[] = $form_state->getValue('films')[$key] = $value;
+            }
+        }
+
         $my_article->set('field_idix_back_personnage_name', $form_state->getValue('name'));
+        $my_article->set('field_idix_back_personnage_films', $films);
 
         $my_article->enforceIsNew();
         $my_article->save();
@@ -107,63 +104,30 @@ class IdixbackForm extends FormBase
             ->execute()
             ->fetchCol();
 
-        //var_dump($nids);
-        var_dump(end($nids));
-        // Get all of the article nodes.
-        //$nodes = node_load_multiple($nids);
+        $new_nid = end($nids);
 
-        //$nid = $my_article->id();
-        //var_dump($nid);
-        die();
-        //echo "TTTTEESEESSTT";
-        //var_dump($my_article);
-        //die();
-        //$my_article->enforceIsNew();
-        //$my_article->save();
-        //var_dump($my_article);
-        //die();
-        //$nid = $my_article->id();
-
-        //var_dump($nid);
-        //die();
-        //$node = \Drupal::entityTypeManager()->getStorage('node')->create([
-        //    'type'       => 'idix_back_personnage'
-        //]);
-        //$node->save();
-
-        //$nid = $node->id();
-        //var_dump($nid);
-        //die();
-        //$my_article->set('title', $form_state->getValue('name'));
-        //$my_article->set('field_idix_back_personnage_id', $form_state->getValue('id'));
-        //$my_article->set('field_idix_back_personnage_name', $form_state->getValue('name'));
-        //$my_article->set('field_idix_back_personnage_films', $form_state->getValue('films'));
-
-        //var_dump($form);
-
-        //$form_state->getformObject()->getEntity()->id();
-        //die();
-        /*
-        foreach ($form_state->getValue('films') as $key => $value) {
+        foreach ($films as $key => $value) {
             $node = \Drupal\node\Entity\Node::load($value);
             $array = $node->toArray();
+            $characters = [];
 
             if (!empty($array['field_idix_back_film_personnages'])) {
                 $actualscharacters = $array['field_idix_back_film_personnages'];
+
                 foreach ($actualscharacters as $keys => $values) {
-                    $characters[] = $value['target_id'];
+                    $characters[] = $values['target_id'];
                 }
-                array_push($characters, $form_state->getValue('id'));
-                $node->set("field_idix_back_film_personnages", $characters);
+                array_push($characters, $new_nid);
+
+                $node->set('field_idix_back_film_personnages', $characters);
                 $node->save();
-            }
-            else {
-                $node->set("field_idix_back_film_personnages", $form_state->getValue('id'));
+            } else {
+                $node->set('field_idix_back_film_personnages', $new_nid);
                 $node->save();
             }
         }
-        */
-        //$my_article->enforceIsNew();
-        //$my_article->save();
+        $path = Url::fromUserInput('/node/' . $new_nid)->toString();
+        $response = new RedirectResponse($path);
+        $response->send();
     }
 }
