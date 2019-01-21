@@ -5,3 +5,11 @@ idix_back.form:
     _form: '\Drupal\idix_back\Form\IdixbackForm'
   requirements:
     _permission: 'access content'
+
+idix_back.films:
+  path: '/films'
+  defaults:
+    _title: 'Liste des films'
+    _controller: 'Drupal\idix_back\Controller\IdixbackModuleController::films_page'
+  requirements:
+    _permission: 'access content'

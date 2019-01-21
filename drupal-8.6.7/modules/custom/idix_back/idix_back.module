@@ -1,0 +1,105 @@
+<?php
+
+# idix_back.module
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function idix_back_preprocess_idix_back_films_page_theme(array &$variables)
+{
+    $nids = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'idix_back_film', '=')
+        ->execute()
+        ->fetchCol();
+    $nodes = node_load_multiple($nids);
+
+    $films = [];
+    foreach ($nodes as $key => $value) {
+        $films[$key]['title'] = $value->field_idix_back_film_title->value;
+        $films[$key]['abstract'] = $value->field_idix_back_film_abstract->value;
+        $films[$key]['date'] = $value->field_idix_back_film_date->value;
+        foreach ($value->field_idix_back_film_personnages as $keyss => $valuess) {
+            $node = \Drupal\node\Entity\Node::load($valuess->target_id);
+            $array = $node->toArray();
+            $actualscharacters = $array['field_idix_back_personnage_name'];
+            $films[$key]['personnages'][$valuess->target_id] = $actualscharacters[0]['value'];
+        }
+    }
+
+    $first_tab = [];
+    $i = 0;
+    foreach ($films as $key => $value) {
+        foreach ($value as $keyk => $valuek) {
+            if ($keyk == 'title') {
+                $first_tab[$i]['title'] = $value['title'];
+                $first_tab[$i]['date'] = $value['date'];
+                $i++;
+            }
+        }
+    }
+    usort($first_tab, 'cmp');
+}
+
+function cmp($date1, $date2)
+{
+    $date1 = $date1['date'];
+    $date2 = $date2['date'];
+
+    if (strtotime($date1) == strtotime($date2)) {
+        return 0;
+    }
+    return (strtotime($date1) > strtotime($date2)) ? -1 : 1;
+}
+
+/**
+ * Implements hook_theme().
+ */
+
+function idix_back_theme(array &$variables)
+{
+    $nids = db_select('node', 'n')
+        ->fields('n', array('nid'))
+        ->condition('type', 'idix_back_film', '=')
+        ->execute()
+        ->fetchCol();
+    $nodes = node_load_multiple($nids);
+
+    $films = [];
+    foreach ($nodes as $key => $value) {
+        $films[$key]['title'] = $value->field_idix_back_film_title->value;
+        $films[$key]['abstract'] = $value->field_idix_back_film_abstract->value;
+        $films[$key]['date'] = $value->field_idix_back_film_date->value;
+        foreach ($value->field_idix_back_film_personnages as $keyss => $valuess) {
+            $node = \Drupal\node\Entity\Node::load($valuess->target_id);
+            $array = $node->toArray();
+            $actualscharacters = $array['field_idix_back_personnage_name'];
+            $films[$key]['personnages'][$valuess->target_id] = $actualscharacters[0]['value'];
+        }
+    }
+
+    $first_tab = [];
+    $i = 0;
+    foreach ($films as $key => $value) {
+        foreach ($value as $keyk => $valuek) {
+            if ($keyk == 'title') {
+                $first_tab[$i]['title'] = $value['title'];
+                $first_tab[$i]['date'] = $value['date'];
+                $i++;
+            }
+        }
+    }
+    usort($first_tab, 'cmp');
+
+    $theme = [];
+    $theme['idix_back_films_page_theme'] =
+        [
+            'variables' => array(
+                'films' => $first_tab,
+                //'date' => $date,
+                'test' => 'test'),
+            'template' => 'idix-back-films',
+        ];
+
+    return $theme;
+}
