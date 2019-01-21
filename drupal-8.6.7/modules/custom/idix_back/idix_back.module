@@ -7,41 +7,13 @@
  */
 function idix_back_preprocess_idix_back_films_page_theme(array &$variables)
 {
-    $nids = db_select('node', 'n')
-        ->fields('n', array('nid'))
-        ->condition('type', 'idix_back_film', '=')
-        ->execute()
-        ->fetchCol();
-    $nodes = node_load_multiple($nids);
-
-    $films = [];
-    foreach ($nodes as $key => $value) {
-        $films[$key]['title'] = $value->field_idix_back_film_title->value;
-        $films[$key]['abstract'] = $value->field_idix_back_film_abstract->value;
-        $films[$key]['date'] = $value->field_idix_back_film_date->value;
-        foreach ($value->field_idix_back_film_personnages as $keyss => $valuess) {
-            $node = \Drupal\node\Entity\Node::load($valuess->target_id);
-            $array = $node->toArray();
-            $actualscharacters = $array['field_idix_back_personnage_name'];
-            $films[$key]['personnages'][$valuess->target_id] = $actualscharacters[0]['value'];
-        }
-    }
-
-    $first_tab = [];
-    $i = 0;
-    foreach ($films as $key => $value) {
-        foreach ($value as $keyk => $valuek) {
-            if ($keyk == 'title') {
-                $first_tab[$i]['title'] = $value['title'];
-                $first_tab[$i]['date'] = $value['date'];
-                $i++;
-            }
-        }
-    }
-    usort($first_tab, 'cmp');
 }
 
-function cmp($date1, $date2)
+/**
+ * Fonction permettant de comparer 2 dates entre elles dans le but de
+ * trier le tableau des films par ordre antéchronologique de date.
+ */
+function idix_back_cmp($date1, $date2)
 {
     $date1 = $date1['date'];
     $date2 = $date2['date'];
@@ -55,16 +27,21 @@ function cmp($date1, $date2)
 /**
  * Implements hook_theme().
  */
-
 function idix_back_theme(array &$variables)
 {
+    /** On récupère tous les 'nids' de type 'idix_back_film' **/
     $nids = db_select('node', 'n')
         ->fields('n', array('nid'))
         ->condition('type', 'idix_back_film', '=')
         ->execute()
         ->fetchCol();
+
+    /** On récupère toutes les données des noeuds correspodants aux 'nids' précédemment récupérés **/
     $nodes = node_load_multiple($nids);
 
+    /** $films : Tableau comportant la liste de tous les films avec toutes les données correspondantes :
+     * title, abstract, date, personnages (id + nom)
+     */
     $films = [];
     foreach ($nodes as $key => $value) {
         $films[$key]['title'] = $value->field_idix_back_film_title->value;
@@ -78,6 +55,7 @@ function idix_back_theme(array &$variables)
         }
     }
 
+    /** $first_tab : Tableau comportant la liste de tous les films avec leur date de sortie correspondante */
     $first_tab = [];
     $i = 0;
     foreach ($films as $key => $value) {
@@ -89,17 +67,16 @@ function idix_back_theme(array &$variables)
             }
         }
     }
-    usort($first_tab, 'cmp');
+    /** Tri du tableau des films par ordre antéchronologique de date **/
+    usort($first_tab, 'idix_back_cmp');
 
     $theme = [];
     $theme['idix_back_films_page_theme'] =
         [
             'variables' => array(
                 'films' => $first_tab,
-                //'date' => $date,
                 'test' => 'test'),
             'template' => 'idix-back-films',
         ];
-
     return $theme;
 }
