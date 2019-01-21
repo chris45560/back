@@ -36,14 +36,15 @@ function idix_back_theme(array &$variables)
         ->execute()
         ->fetchCol();
 
-    /** On récupère toutes les données des noeuds correspodants aux 'nids' précédemment récupérés **/
+    /** On récupère toutes les données des noeuds correspondants aux 'nids' précédemment récupérés **/
     $nodes = node_load_multiple($nids);
 
     /** $films : Tableau comportant la liste de tous les films avec toutes les données correspondantes :
-     * title, abstract, date, personnages (id + nom)
+     * id, title, abstract, date, personnages (id + nom)
      */
     $films = [];
     foreach ($nodes as $key => $value) {
+        $films[$key]['id'] = $value->nid->value;
         $films[$key]['title'] = $value->field_idix_back_film_title->value;
         $films[$key]['abstract'] = $value->field_idix_back_film_abstract->value;
         $films[$key]['date'] = $value->field_idix_back_film_date->value;
@@ -55,12 +56,13 @@ function idix_back_theme(array &$variables)
         }
     }
 
-    /** $first_tab : Tableau comportant la liste de tous les films avec leur date de sortie correspondante */
+    /** $first_tab : Tableau comportant la liste de tous les films avec id, title et date de sortie correspondante */
     $first_tab = [];
     $i = 0;
     foreach ($films as $key => $value) {
         foreach ($value as $keyk => $valuek) {
             if ($keyk == 'title') {
+                $first_tab[$i]['id'] = $value['id'];
                 $first_tab[$i]['title'] = $value['title'];
                 $first_tab[$i]['date'] = $value['date'];
                 $i++;
@@ -74,9 +76,16 @@ function idix_back_theme(array &$variables)
     $theme['idix_back_films_page_theme'] =
         [
             'variables' => array(
-                'films' => $first_tab,
-                'test' => 'test'),
+                'films' => $first_tab),
             'template' => 'idix-back-films',
+        ];
+    $theme['idix_back_films_id_theme'] =
+        [
+            'variables' => array(
+                'nid' => NULL,
+                'film_detail' => NULL,
+                'films' => $first_tab),
+            'template' => 'idix-back-films-id',
         ];
     return $theme;
 }

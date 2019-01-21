@@ -13,3 +13,14 @@ idix_back.films:
     _controller: 'Drupal\idix_back\Controller\IdixbackModuleController::films_page'
   requirements:
     _permission: 'access content'
+
+idix_back.filmsid:
+  path: '/films/{node}'
+  defaults:
+    _controller: '\Drupal\idix_back\Controller\IdixbackModuleController::films_id'
+  options:
+    parameters:
+      node:
+        type: entity:node
+  requirements:
+    _permission: 'access content'

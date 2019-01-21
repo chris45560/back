@@ -2,13 +2,8 @@
     <ul>
         {% for film in films %}
             <li>
-                <h2>{{ film.title|e }}</h2>
-                {#<p>Accroche : {{ film.abstract|e }}</p>#}
+                <h2><a href = "films/{{ film.id|e }}">{{ film.title|e }}</a></h2>
                 <p>Date de sortie : {{ film.date|e }}</p>
-                {#<h3>Personnages :</h3>
-                {% for personnage in film.personnages %}
-                <li>{{ personnage }}</li>
-                {% endfor %}#}
             </li>
         {% endfor %}
     </ul>

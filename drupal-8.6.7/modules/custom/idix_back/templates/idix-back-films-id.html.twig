@@ -1,0 +1,9 @@
+<div>
+    <h2>{{ film_detail.title|e }}</h2>
+    <p>Accroche : {{ film_detail.abstract|e }}</p>
+    <p>Date de sortie : {{ film_detail.date|e }}</p>
+    <h3>Personnages :</h3>
+    {% for personnage in film_detail.personnages %}
+        <li>{{ personnage }}</li>
+    {% endfor %}
+</div>
